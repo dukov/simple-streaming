@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-transcode
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-render
+  template:
+    metadata:
+      labels:
+        app: nginx-render
+    spec:
+      containers:
+        - name: nginx
+          image: alfg/nginx-rtmp
+          command:
+            - nginx
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+            - containerPort: 1935
+          volumeMounts:
+            - mountPath: /etc/nginx/nginx.conf
+              name: config-volume
+              subPath: nginx.conf
+      volumes:
+      - name: config-volume
+        configMap:
+          name: nginx-config
